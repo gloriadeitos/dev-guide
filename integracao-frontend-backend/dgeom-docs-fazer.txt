@@ -1,0 +1,133 @@
+service -> se comunica com o backend
+	-> cria métodos
+
+model -> classe para instanciar
+	
+pagina -> chama os métodos cria as instâncias e aplica logica de negocio 
+
+
+
+===================backend:
+
+1)
+docker-compose up --build -> build do docker
+
+2) Dar esse comando somente se o Victor pedir:
+docker-compose down -v -> limpar volumes do banco de dados local
+
+
+=========================página de login:
+
+====OQ EU VO ENVIAR:
+POST → http://localhost:4201/api/auth/login
+
+Body req:
+{
+  "email": "victor.alcantara@ufpr.br",
+  "senha": "senhaSegura123"
+}
+
+====
+
+===OQ EU VO RECEBER:
+{
+    "nome": "VICTOR ALCANTARA MENEZES MOTA",
+    "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWSUNUT1IuQUxDQU5UQVJBQFVGUFIuQlIiLCJpZCI6MjYsInVzZXJsZXZlbCI6dHJ1ZSwiYWRtbGV2ZWwiOnRydWUsImNoZWZlRGVwdCI6dHJ1ZSwiYXRpdm8iOnRydWUsImV4cCI6MTc1MTU3MDUxMX0.A4gX-xXO5ZLIuk9V9FU2VV6BM9uoLKK74CITPYEToHINK77KzA7kuq6WKuTz9i_vBLbndt99fO0OtDx1LBfepg",
+    "email": "VICTOR.ALCANTARA@UFPR.BR"
+}
+
+====
+
+====OQ ESTÁ NO TOKEN JWT (n sei praq serve esse arquivo, me explique dps separadamente, n sei pq é jwt me explique depois)
+
+DECODED PAYLOAD (n sei oqq é isso nem praq isso serve, me explica tmb)
+
+Caso precise do secret que foi usado pra gerar o token, use esse daqui:
+SECRET=717ac506950da0ccb6404cdd5e7591f72018a20cbca27c8a423e9c9e5626ac61
+
+{
+  "sub": "VICTOR.ALCANTARA@UFPR.BR",
+  "id": 26,
+  "userlevel": true,
+  "admlevel": true,
+  "chefeDept": true,
+  "ativo": true,
+  "exp": 1751570511
+}
+
+OBS: para que o login possa ser efetuado, esse json que ta dentro do token precisa obrigatoriamente ter o "userlevel" e o "ativo" como true, caso contrário o login não pode ser continuado. No caso do "userlevel" significa que o e-mail não foi verificado (pfv coloque uma mensagem sobre isso pro usuário saber que o e-mail não foi verificado). Além disso, caso o "ativo" seja false, significa que o usuário não está ativo no sistema, nesse caso, mostre uma mensagem pro usuário mais ou menos assim: "usuário não tem mais acesso ao sistema"
+
+OBS2: Tipos de usuário: Se "admlevel" e ao mesmo tempo o "chefeDept" forem false, significa que o usuário é "docente" (o docente tem o menor nível de privilégio). Agora, se o "admlevel" estiver como true, significa que o usuário é "administrador". E se o "chefeDept" for true, significa que o usuário é "chefe do departamento". Porém, é importante ressaltar que se "chefeDept" for true, obrigatoriamente o "admlevel" também precisa ser true, pois o chefe do departamento precisa ser um administrador.
+
+====
+
+====BUSCAR DADOS DO USUÁRIO (Com o token no Header da requisição (n sei oq isso significa, me explicar depois)):
+
+====OQ EU VO ENVIAR:
+GET → http://localhost:4201/api/usuario/aqui-vai-ser-o-ip-do-usuario
+
+ou seja:
+
+GET → http://localhost:4201/api/usuario/{id}
+
+também vo precisar enviar no Header o Token:
+Authorization: valor-do-token-aqui ou seja, o Token JWT (n sei oq é JWT me explica dps)
+
+====
+
+===OQ EU VO RECEBER:
+{
+    "id": 26,
+    "nome": "VICTOR ALCANTARA MENEZES MOTA",
+    "email": "VICTOR.ALCANTARA@UFPR.BR",
+    "telefone": "",
+    "docente": true,
+    "userlevel": true,
+    "admlevel": true,
+    "ativo": true,
+    "chefeDept": true,
+    "cpf": "12571161938",
+    "idSetorDepartamento": null,
+    "dataAdmissao": null,
+    "titulacao": null,
+    "classeNivel": null,
+    "regimeTrabalho": null,
+    "vinculo": null,
+    "participacaoProjeto": null,
+    "cursaPos": null,
+    "cursaPosArea": null,
+    "cursaPosInstituicao": null,
+    "cursaPosTermino": null,
+    "emailConfirmToken": null,
+    "_links": {
+        "self": {
+            "href": "http://localhost:4201/api/usuario/26",
+            "type": "GET"
+        },
+        "all-usuarios": {
+            "href": "http://localhost:4201/api/usuario",
+            "type": "GET"
+        },
+        "update-usuario": {
+            "href": "http://localhost:4201/api/usuario/26",
+            "type": "PUT"
+        },
+        "delete-usuario": {
+            "href": "http://localhost:4201/api/usuario/26",
+            "type": "DELETE"
+        },
+        "login": {
+            "href": "http://localhost:4201/api/auth/login",
+            "type": "POST"
+        }
+    }
+}
+
+====
+
+====SALVAR NOS COOKIES
+
+Pra utilização no front-end eu preciso guardar algumas informações nos cookies:
+
+1) Token JWT
+2) Objeto do usuário
